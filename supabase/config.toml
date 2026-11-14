@@ -1,0 +1,4 @@
+project_id = "teqctrceotdzzcxynlzb"
+
+[functions.blvck-api]
+verify_jwt = false
