@@ -97,12 +97,12 @@ Deno.serve(async (req) => {
       const limit = Math.min(Math.max(Number(body.limit) || 60, 1), 100);
       const { data, error } = await db.from("blvck_messages")
         .select("id,user_id,content,created_at,blvck_accounts(username)")
-        .order("created_at", { ascending: true }).limit(limit);
+        .order("created_at", { ascending: false }).limit(limit);
       if (error) throw error;
       return json({ messages: (data || []).map((m: any) => ({
         id: m.id, user_id: m.user_id, content: m.content, created_at: m.created_at,
         username: m.blvck_accounts?.username || "BLVCK USER",
-      })) });
+      })).reverse() });
     }
 
     if (action === "chat-send") {
