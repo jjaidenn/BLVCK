@@ -35,7 +35,7 @@ supabase secrets set SUPABASE_URL="https://teqctrceotdzzcxynlzb.supabase.co" SUP
 ```
 
 ## Current status
-The backend source files have been committed to GitHub. The migration has not been run and the Edge Function has not been deployed yet. The browser adapter still needs the public project URL/key inserted and needs to be wired into the latest launcher HTML before the account and chat UI can work end-to-end.
+The backend source files have been committed to GitHub. The launcher wiring and backend source are committed. The migration has not been run and the Edge Function has not been deployed yet. The latest Library launcher has been committed to `index.html` with `blvck-backend.js` loaded after the account and chat UI. The project URL is configured in the adapter; the public publishable key is still a placeholder and must be filled before requests can authenticate.
 
 ## Testing notes
 Start with a few test accounts. Verify duplicate usernames are rejected, wrong passwords are rejected, sessions expire, chat messages persist, and users cannot set their own role. Add rate limiting and moderation controls before opening registration publicly.
