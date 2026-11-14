@@ -5,7 +5,8 @@
   const SUPABASE_PUBLISHABLE_KEY = "PASTE_YOUR_SUPABASE_PUBLISHABLE_KEY"; // Add the public publishable key from Supabase Project Settings.
   const API = SUPABASE_URL.replace(/\/$/, "") + "/functions/v1/blvck-api";
   const TOKEN_KEY = "blvck_session_v1";
-  let currentUser = null;\n  let lastMessageId = 0;
+  let currentUser = null;
+  let lastMessageId = 0;
 
   async function request(action, payload = {}, needsAuth = false) {
     const token = sessionStorage.getItem(TOKEN_KEY) || "";
@@ -60,7 +61,9 @@
     getCurrentUser,
     async listMessages({ limit = 60 } = {}) {
       const result = await request("chat-list", { limit }, true);
-      const rows = result.messages || [];\n      for (const row of rows) lastMessageId = Math.max(lastMessageId, Number(row.id) || 0);\n      return rows;
+      const rows = result.messages || [];
+      for (const row of rows) lastMessageId = Math.max(lastMessageId, Number(row.id) || 0);
+      return rows;
     },
     async sendMessage({ content }) {
       await request("chat-send", { content }, true);
