@@ -1,8 +1,8 @@
 // BLVCK browser adapter. Keep this file public-key-only; never put server secrets here.
 (() => {
   "use strict";
-  const SUPABASE_URL = "PASTE_YOUR_SUPABASE_PROJECT_URL";
-  const SUPABASE_PUBLISHABLE_KEY = "PASTE_YOUR_SUPABASE_PUBLISHABLE_KEY";
+  const SUPABASE_URL = "https://teqctrceotdzzcxynlzb.supabase.co";
+  const SUPABASE_PUBLISHABLE_KEY = "PASTE_YOUR_SUPABASE_PUBLISHABLE_KEY"; // Add the public publishable key from Supabase Project Settings.
   const API = SUPABASE_URL.replace(/\/$/, "") + "/functions/v1/blvck-api";
   const TOKEN_KEY = "blvck_session_v1";
   let currentUser = null;
@@ -54,7 +54,8 @@
     window.dispatchEvent(new Event("blvck:auth-changed"));
   }
 
-  const authAdapter = { getCurrentUser, login, signUp, logout };
+  async function claimOwner(setupToken) { return acceptSession(await request("owner-claim", { setupToken }, true)); }
+  const authAdapter = { getCurrentUser, login, signUp, logout, claimOwner };
   const chatAdapter = {
     getCurrentUser,
     async listMessages({ limit = 60 } = {}) {
@@ -88,6 +89,7 @@
   window.BLVCK_AUTH_ADAPTER = authAdapter;
   window.BLVCK_CHAT_ADAPTER = chatAdapter;
   window.BLVCK_BACKEND_READY = true;
+  window.dispatchEvent(new Event("blvck:auth-adapter-ready"));
   window.dispatchEvent(new Event("blvck:chat-adapter-ready"));
   getCurrentUser().then(() => window.dispatchEvent(new Event("blvck:auth-changed")));
 })();
