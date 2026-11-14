@@ -5,10 +5,12 @@
   const SUPABASE_PUBLISHABLE_KEY = "PASTE_YOUR_SUPABASE_PUBLISHABLE_KEY"; // Add the public publishable key from Supabase Project Settings.
   const API = SUPABASE_URL.replace(/\/$/, "") + "/functions/v1/blvck-api";
   const TOKEN_KEY = "blvck_session_v1";
+  const CONFIGURED = !SUPABASE_PUBLISHABLE_KEY.startsWith("PASTE_");
   let currentUser = null;
   let lastMessageId = 0;
 
   async function request(action, payload = {}, needsAuth = false) {
+    if (!CONFIGURED) throw new Error("BLVCK setup is not finished: the public Supabase publishable key is missing.");
     const token = sessionStorage.getItem(TOKEN_KEY) || "";
     const response = await fetch(API, {
       method: "POST",
@@ -90,10 +92,15 @@
     }
   };
 
-  window.BLVCK_AUTH_ADAPTER = authAdapter;
-  window.BLVCK_CHAT_ADAPTER = chatAdapter;
-  window.BLVCK_BACKEND_READY = true;
-  window.dispatchEvent(new Event("blvck:auth-adapter-ready"));
-  window.dispatchEvent(new Event("blvck:chat-adapter-ready"));
-  getCurrentUser().then(() => window.dispatchEvent(new Event("blvck:auth-changed")));
+  window.BLVCK_BACKEND_READY = CONFIGURED;
+  if (CONFIGURED) {
+    window.BLVCK_AUTH_ADAPTER = authAdapter;
+    window.BLVCK_CHAT_ADAPTER = chatAdapter;
+    window.dispatchEvent(new Event("blvck:auth-adapter-ready"));
+    window.dispatchEvent(new Event("blvck:chat-adapter-ready"));
+    getCurrentUser().then(() => window.dispatchEvent(new Event("blvck:auth-changed")));
+  } else {
+    window.BLVCK_AUTH_ADAPTER = null;
+    window.BLVCK_CHAT_ADAPTER = null;
+  }
 })();
