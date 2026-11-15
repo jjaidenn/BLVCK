@@ -32,6 +32,35 @@
     async sendMessage({content}){await request("chat-send",{content},true);},
     subscribe(onMessage){let stopped=false;const poll=async()=>{if(stopped)return;try{const result=await request("chat-list",{limit:100},true);const fresh=(result.messages||[]).filter(row=>(Number(row.id)||0)>lastMessageId);for(const row of fresh){lastMessageId=Math.max(lastMessageId,Number(row.id)||0);onMessage(row);}}catch(error){console.warn("[BLVCK chat polling]",error);}};poll();const timer=window.setInterval(poll,5000);return()=>{stopped=true;window.clearInterval(timer);};}
   };
+  // Independent Railway service: public launcher/config API.
+  const RAILWAY_API_BASE = "https://blvck-api-production.up.railway.app";
+  const railwayRequest = async (path) => {
+    const response = await fetch(RAILWAY_API_BASE + path, { headers: { "Accept": "application/json" }, cache: "no-store" });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok || data.ok === false) throw new Error(data.error || "BLVCK API request failed.");
+    return data;
+  };
+  const railwayAPI = {
+    baseURL: RAILWAY_API_BASE,
+    health: () => railwayRequest("/health"),
+    getConfig: () => railwayRequest("/api/v1/config"),
+    getLinks: () => railwayRequest("/api/v1/links")
+  };
+  window.BLVCK_API = railwayAPI;
+  window.BLVCK_API_STATUS = { state: "connecting", config: null, links: [] };
+  window.BLVCK_API_READY = railwayAPI.health()
+    .then(async health => {
+      const [config, linkResult] = await Promise.all([railwayAPI.getConfig(), railwayAPI.getLinks()]);
+      window.BLVCK_API_STATUS = { state: "online", health, config, links: linkResult.links || [] };
+      window.dispatchEvent(new CustomEvent("blvck:api-ready", { detail: window.BLVCK_API_STATUS }));
+      return window.BLVCK_API_STATUS;
+    })
+    .catch(error => {
+      window.BLVCK_API_STATUS = { state: "offline", error: error.message, config: null, links: [] };
+      window.dispatchEvent(new CustomEvent("blvck:api-error", { detail: window.BLVCK_API_STATUS }));
+      console.warn("[BLVCK Railway API]", error);
+      throw error;
+    });
   window.BLVCK_BACKEND_READY=CONFIGURED;
   window.BLVCK_AUTH_ADAPTER=authAdapter;
   window.BLVCK_CHAT_ADAPTER=chatAdapter;
