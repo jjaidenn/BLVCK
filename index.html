@@ -2045,6 +2045,60 @@ html.blvck-lite .bb-l::before,html.blvck-lite .bb-l::after,html.blvck-lite .bb-b
   };
 })();
 </script>
+<style id="blvck-team-letter-style">
+#blvck-team-letter{position:fixed;inset:0;z-index:2147482000;display:grid;place-items:center;padding:20px;background:rgba(2,5,12,.76);backdrop-filter:blur(18px) saturate(145%);-webkit-backdrop-filter:blur(18px) saturate(145%);opacity:0;transition:opacity .38s ease}
+#blvck-team-letter.is-visible{opacity:1}
+#blvck-team-letter .letter-card{position:relative;width:min(520px,100%);padding:clamp(24px,5vw,38px);overflow:hidden;border:1px solid color-mix(in srgb,var(--primary) 42%,rgba(255,255,255,.2));border-radius:25px;background:linear-gradient(145deg,rgba(23,31,48,.97),rgba(8,12,21,.98));box-shadow:0 30px 100px rgba(0,0,0,.65),0 0 55px color-mix(in srgb,var(--primary) 17%,transparent);transform:translateY(18px) scale(.98);transition:transform .48s cubic-bezier(.2,.8,.2,1)}
+#blvck-team-letter.is-visible .letter-card{transform:translateY(0) scale(1)}
+#blvck-team-letter .letter-card:before{content:"";position:absolute;width:260px;height:260px;right:-130px;top:-160px;border-radius:50%;background:var(--primary);opacity:.17;filter:blur(55px);pointer-events:none}
+#blvck-team-letter .letter-top{display:flex;align-items:center;gap:12px;margin-bottom:26px}
+#blvck-team-letter .letter-icon{width:46px;height:46px;display:grid;place-items:center;border:1px solid color-mix(in srgb,var(--primary) 42%,transparent);border-radius:14px;background:color-mix(in srgb,var(--primary) 12%,transparent);color:var(--primary);box-shadow:var(--glow)}
+#blvck-team-letter .letter-icon svg{width:23px;height:23px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+#blvck-team-letter .letter-kicker{font-size:10px;font-weight:850;letter-spacing:.19em;color:var(--primary)}
+#blvck-team-letter h2{position:relative;margin:0 0 15px;font-size:clamp(27px,6vw,39px);line-height:1.08;letter-spacing:-1.5px;color:#fff}
+#blvck-team-letter .letter-copy{position:relative;margin:0;color:#c2c8d6;font-size:14px;line-height:1.85}
+#blvck-team-letter .letter-signoff{margin-top:23px;padding-top:18px;border-top:1px solid rgba(255,255,255,.1);color:#f5f7ff;font-size:13px;font-weight:750}
+#blvck-team-letter .letter-signoff span{display:block;margin-top:5px;color:var(--primary);font-size:11px;letter-spacing:.1em}
+#blvck-team-letter .letter-close{width:100%;margin-top:24px;padding:13px 16px;border:1px solid color-mix(in srgb,var(--primary) 60%,transparent);border-radius:12px;background:linear-gradient(110deg,var(--primary),var(--primary2));color:#041018;font-weight:900;letter-spacing:.04em;cursor:pointer;box-shadow:var(--glow)}
+#blvck-team-letter .letter-close:focus-visible{outline:2px solid white;outline-offset:3px}
+@media(prefers-reduced-motion:reduce){#blvck-team-letter,#blvck-team-letter .letter-card{transition:none}}
+</style>
+<script id="blvck-team-letter-js">
+(function(){
+  var shown=false;
+  function showLetter(){
+    if(shown||!document.body||document.getElementById("blvck-team-letter"))return;
+    shown=true;
+    var layer=document.createElement("div");
+    layer.id="blvck-team-letter";
+    layer.setAttribute("role","dialog");
+    layer.setAttribute("aria-modal","true");
+    layer.setAttribute("aria-labelledby","blvck-letter-title");
+    layer.innerHTML='<article class="letter-card"><div class="letter-top"><div class="letter-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m4 7 8 6 8-6"/></svg></div><div class="letter-kicker">A NOTE FROM THE BLVCK TEAM</div></div><h2 id="blvck-letter-title">This one is for you.</h2><p class="letter-copy">Thank you for supporting BLVCK and helping us get this far. Every bit of support means a lot to us. We know the wait has been real, but the proxy is dropping soon — so don’t get impatient just yet. We’re working to make it worth the wait. Much love to everyone who’s been rocking with us.</p><div class="letter-signoff">With love,<span>THE BLVCK TEAM</span></div><button class="letter-close" type="button">LET’S GO <span aria-hidden="true">→</span></button></article>';
+    document.body.appendChild(layer);
+    requestAnimationFrame(function(){layer.classList.add("is-visible");});
+    var close=function(){layer.classList.remove("is-visible");setTimeout(function(){layer.remove();shown=false;},380);};
+    layer.querySelector(".letter-close").addEventListener("click",close);
+    layer.addEventListener("click",function(e){if(e.target===layer)close();});
+    var key=function(e){if(e.key==="Escape"&&document.getElementById("blvck-team-letter")){close();removeEventListener("keydown",key);}};
+    addEventListener("keydown",key);
+    layer.querySelector(".letter-close").focus({preventScroll:true});
+  }
+  var observer=new MutationObserver(function(records){
+    for(var i=0;i<records.length;i++){
+      for(var j=0;j<records[i].removedNodes.length;j++){
+        var node=records[i].removedNodes[j];
+        if(node.nodeType===1&&(node.id==="blvckBoot"||(node.querySelector&&node.querySelector("#blvckBoot")))){
+          setTimeout(showLetter,120);
+          return;
+        }
+      }
+    }
+  });
+  function watch(){if(document.body)observer.observe(document.body,{childList:true,subtree:true});}
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",watch,{once:true});else watch();
+})();
+</script>
 <div class="blvck-global-status" role="status" aria-label="Device status">
   <div class="blvck-status-brand">BLVCK <span>V8</span></div>
   <div class="blvck-status-items">
